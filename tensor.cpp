@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <cmath>
 using namespace std;
 
 class Tensor {
@@ -54,8 +55,37 @@ class Tensor {
             this->data = v;
             this->cols = other.cols;
 
+        }
 
+        void softmax(){
+            float sum = 0;
+            for(int i = 0; i < this->data.size(); i++){
+                sum += exp(data[i]);
+            }
+            for(int j = 0; j < this->data.size(); j++){
+                data[j] = exp(data[j]) / sum;
+            }
+        }
 
+        void transpose(){
+            vector<float> v = vector<float>(this->rows * this->cols, 0.0f);
+            for(int i = 0; i < this -> data.size(); i++){
+                int r = i / this -> cols;
+                int c = i % this -> cols;
+                int pos = c * this -> rows + r;
+
+                v[pos] = data[i];
+            }
+            this->data = v;
+            int temp = this->rows;
+            this->rows = this->cols;
+            this->cols = temp;
+        }
+
+        void scalar_mul(int scale){
+            for(int i = 0; i < this -> data.size(); i++){
+                data[i] *= scale;
+            }
 
         }
 
@@ -94,13 +124,7 @@ int main(){
     t.at(2,1) = 2;
     t.print();
     std::cout << "\n";
-    Tensor b(2,2);
-    b.at(0,0) = 5;
-    b.at(0,1) = 2;
-    b.at(1,0) = 3;
-    b.at(2,1) = 2;
-    b.print();
-    std::cout << "\n";
-    t.multiply(b);
+    t.softmax();
     t.print();
+
 }
